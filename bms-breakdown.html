@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIP-BMS Teardown — Code and Short Circuits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    main.content { background: #efefef; padding: 3rem 0; }
+
+    .blog-page { max-width: 1100px; width: min(100%, 1100px); margin: 0 auto; padding: 3rem 1.5rem 4rem; background: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border: 2px dashed #000; }
+    .blog-page, .blog-page * { color: #000 !important; }
+
+    .blog-page h1 {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      text-transform: none;
+      color: #000;
+      margin-bottom: 0.75rem;
+      -webkit-text-stroke: 0;
+      font-weight: 700;
+    }
+    .markdown-body {
+      max-width: 100%;
+      text-align: left;
+      color: #000;
+    }
+    .markdown-body p {
+      max-width: 100%;
+    }
+    .markdown-body img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1.75rem 0;
+      border-radius: 12px;
+    }
+    .markdown-body .zoom-figure {
+      margin: 2rem 0;
+    }
+    .markdown-body .zoom-figure img {
+      margin: 0;
+      cursor: pointer;
+      border: 1px solid #d0d0d0;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .markdown-body .zoom-figure a {
+      display: inline-block;
+    }
+    .markdown-body .zoom-figure figcaption {
+      margin-top: 0.7rem;
+      font-size: 0.95rem;
+      color: #555;
+      font-style: italic;
+    }
+    .svg-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .svg-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .svg-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+    }
+    .svg-modal-panel {
+      position: relative;
+      width: min(95vw, 1100px);
+      height: min(85vh, 900px);
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+      z-index: 1;
+    }
+    .svg-modal-close {
+      position: absolute;
+      top: 0.7rem;
+      right: 0.7rem;
+      z-index: 2;
+      border: none;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .svg-modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+    .svg-zoom-shell {
+      width: 100%;
+      height: 100%;
+      background: #f7f7f7;
+      overflow: auto;
+      padding: 1rem;
+    }
+    .svg-zoom-controls {
+      position: absolute;
+      top: 0.7rem;
+      left: 0.7rem;
+      z-index: 2;
+      display: flex;
+      gap: 0.35rem;
+    }
+    .svg-zoom-controls button {
+      border: none;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .svg-zoom-stage {
+      width: fit-content;
+      margin: 0 auto;
+      transform-origin: center center;
+      transition: transform 0.15s ease;
+      cursor: grab;
+    }
+    .svg-zoom-stage.dragging {
+      cursor: grabbing;
+    }
+    .svg-zoom-stage svg {
+      display: block;
+      max-width: none;
+      height: auto;
+    }
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .blog-page .back-link {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent-dim);
+      display: inline-block;
+      margin-bottom: 2rem;
+    }
+    .blog-page .back-link:hover { color: var(--accent); }
+    .blog-page p { line-height: 1.75; color: var(--text-muted); margin-bottom: 1rem; }
+    .blog-page p { color: #000; }
+    .blog-page ul,
+    .blog-page ol {
+      margin: 1rem 0 1.5rem 1.3rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .blog-page li {
+      margin-bottom: 0.65rem;
+    }
+    .blog-page .placeholder {
+      background: var(--light-grey-soft);
+      border: 1px dashed var(--card-border);
+      border-radius: 4px;
+      padding: 2rem;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="binary-bg" aria-hidden="true"></div>
+    <div class="header-inner">
+      <div class="title-block">
+        <h1 class="site-title">
+          <a href="index.html" style="color:inherit;text-decoration:none;">
+            Code and Short Circuits
+          </a>
+        </h1>
+        <p class="site-tagline">Because I'd rather break it, than adore the unknown</p>
+      </div>
+      <nav class="nav-bar">
+        <a href="index.html" class="nav-link active">home</a>
+        <a href="index.html#about" class="nav-link">about</a>
+        <a href="index.html#contact" class="nav-link">contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content">
+    <article class="blog-page">
+      <a href="index.html" class="back-link">← Back to tutorials</a>
+      <h1>VIP-BMS Teardown</h1>
+      <p class="card-meta" style="border:none;padding:0;margin-bottom:1.5rem;">
+        <time datetime="2026-07-17">17 Jul, 2026</time>
+        · Circuits
+      </p>
+      <div id="article-content"></div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>Code and Short Circuits — electronics tutorials, circuits, and breakdowns.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    async function renderMarkdownArticle() {
+      try {
+        const response = await fetch('bms-breakdown.md');
+        if (!response.ok) throw new Error('Could not load markdown file.');
+
+        const markdown = await response.text();
+        const html = marked.parse(markdown);
+
+        const article = document.getElementById('article-content');
+        article.innerHTML = '<div class="markdown-body">' + html + '</div>';
+
+        const svgLinks = article.querySelectorAll('.svg-link');
+        if (svgLinks.length) {
+          const modal = document.createElement('div');
+          modal.className = 'svg-modal';
+          modal.innerHTML = `
+            <div class="svg-modal-backdrop"></div>
+            <div class="svg-modal-panel">
+              <div class="svg-zoom-controls">
+                <button type="button" class="svg-zoom-in" aria-label="Zoom in">+</button>
+                <button type="button" class="svg-zoom-out" aria-label="Zoom out">−</button>
+                <button type="button" class="svg-zoom-reset" aria-label="Reset zoom">↺</button>
+              </div>
+              <button class="svg-modal-close" type="button" aria-label="Close diagram">×</button>
+              <div class="svg-modal-frame">
+                <div class="svg-zoom-shell"></div>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+
+          const shell = modal.querySelector('.svg-zoom-shell');
+          const stage = document.createElement('div');
+          stage.className = 'svg-zoom-stage';
+          shell.appendChild(stage);
+
+          let zoom = 1;
+          let offsetX = 0;
+          let offsetY = 0;
+          let isDragging = false;
+          let startX = 0;
+          let startY = 0;
+
+          const applyTransform = () => {
+            stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+          };
+
+          const setSvg = (src) => {
+            fetch(src)
+              .then((response) => response.text())
+              .then((text) => {
+                stage.innerHTML = text;
+                zoom = 1;
+                offsetX = 0;
+                offsetY = 0;
+                applyTransform();
+              });
+          };
+
+          const closeModal = () => {
+            modal.classList.remove('is-open');
+            stage.innerHTML = '';
+            zoom = 1;
+            offsetX = 0;
+            offsetY = 0;
+            applyTransform();
+          };
+
+          modal.querySelector('.svg-modal-backdrop').addEventListener('click', closeModal);
+          modal.querySelector('.svg-modal-close').addEventListener('click', closeModal);
+          modal.querySelector('.svg-zoom-in').addEventListener('click', () => {
+            zoom = Math.min(3, zoom + 0.25);
+            applyTransform();
+          });
+          modal.querySelector('.svg-zoom-out').addEventListener('click', () => {
+            zoom = Math.max(0.75, zoom - 0.25);
+            applyTransform();
+          });
+          modal.querySelector('.svg-zoom-reset').addEventListener('click', () => {
+            zoom = 1;
+            offsetX = 0;
+            offsetY = 0;
+            applyTransform();
+          });
+
+          stage.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            startX = event.clientX - offsetX;
+            startY = event.clientY - offsetY;
+            stage.classList.add('dragging');
+          });
+
+          window.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
+            offsetX = event.clientX - startX;
+            offsetY = event.clientY - startY;
+            applyTransform();
+          });
+
+          window.addEventListener('mouseup', () => {
+            isDragging = false;
+            stage.classList.remove('dragging');
+          });
+
+          article.addEventListener('click', (event) => {
+            const link = event.target.closest('.svg-link');
+            if (!link) return;
+
+            event.preventDefault();
+            setSvg(link.getAttribute('data-svg-src'));
+            modal.classList.add('is-open');
+          });
+
+          document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              closeModal();
+            }
+          });
+        }
+      } catch (error) {
+        document.getElementById('article-content').innerHTML =
+          '<div class="placeholder">Unable to load article. Please check the markdown file.</div>';
+        console.error(error);
+      }
+    }
+
+    renderMarkdownArticle();
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code and Short Circuits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="binary-bg" aria-hidden="true"></div>
+    <div class="header-inner">
+      <div class="title-block">
+        <h1 class="site-title">Code and Short Circuits</h1>
+        <p class="site-tagline">Because I'd rather break it, than adore the unknown</p>
+      </div>
+      <nav class="nav-bar">
+        <a href="#" class="nav-link active">home</a>
+        <a href="#about" class="nav-link">about</a>
+        <a href="#contact" class="nav-link">contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="content">
+      <div class="cards-grid">
+        <a href="bms-breakdown.html" class="flashcard">
+          <div class="card-meta">
+            <time datetime="2026-07-17">17 Jul, 2026</time>
+            <span class="card-author">by @CodeAndShortCircuits</span>
+          </div>
+          <span class="category-tag circuits">Circuits</span>
+          <div class="card-image">
+            <div class="card-image-inner">
+              <img
+                src="CardImages/VIP_BMS_Image.JPG"
+                alt="VIP-BMS logic board PCB from Dongguan Weimei Guanze Electronic Technology Co."
+                class="card-thumbnail"
+              />
+              <div class="card-image-shade" aria-hidden="true"></div>
+              <h2 class="card-overlay-title">VIP-BMS TEARDOWN</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">VIP-BMS Teardown</h3>
+            <p class="card-desc">
+              A deep dive into the design, ingenuity &amp; workflow of this VIP-BMS logic board from Dongguan Weimei Guanze Electronic Technology Co.
+            </p>
+            <div class="card-stats">
+              <span class="stat">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                7
+              </span>
+              <span class="stat">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                304
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  <section class="about-section" id="about">
+    <div class="about-inner">
+      <h2>About Us</h2>
+      <p>Code and Short Circuits is a collective of hardware enthusiasts, embedded engineers, and tinkerers who believe that curiosity is the spark behind every great invention.</p>
+      <p>We share in-depth tutorials, project breakdowns, and hands-on guides on everything from PCB design to hardware hacking. We make sure that everything is rooted in first principles so as to remove all abstractions and allow even beginners/noobs to easily get down to work with whatever's around them.</p>
+    </div>
+  </section>
+
+  <section class="contact-section" id="contact">
+    <div class="contact-inner">
+      <h2>Contact</h2>
+      <p>Reach out for projects, tutorials, or hardware questions.</p>
+      <div class="contact-grid">
+        <a href="https://www.youtube.com/@ShortCircuitsCompiler" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <div class="contact-card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 512 512" class="contact-icon" aria-hidden="true">
+              <circle cx="256" cy="256" r="200" fill="red" />
+            </svg>
+            <span>YouTube</span>
+          </div>
+          <strong>ShortCircuitsCompiler</strong>
+        </a>
+        <a href="mailto:shukranwambua@gmail.com" class="contact-card">
+          <div class="contact-card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon lucide lucide-mail text-warm-orange" aria-hidden="true">
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+            <span>Email</span>
+          </div>
+          <strong>shukranwambua@gmail.com</strong>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Code and Short Circuits — electronics tutorials, circuits, and breakdowns.</p>
+  </footer>
+</body>
+</html>

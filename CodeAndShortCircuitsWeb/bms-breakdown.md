@@ -162,7 +162,7 @@ The F8TA is supplied with 3.3V to its decoupled DVCC and AVCC input pins via a d
 <h2 id="can-bus-interface">CAN Bus Interface</h2>
 There's a CAN Bus port on this VIP BMS logic board which  enables interfacing via CAN Bus. This system is made up of a CAN controller and a CAN transceiver with a galvanic isolator between the two. There's also a dominant state detection circuit that bypasses the transceiver and goes to the MCU for use as a faulty transceiver detection circuit. What stands out most within the CAN communication interface is the  high level isolation implemented within the system. 
 
-![alt text](bms-breakdownImages/CAN_INTERFACE.PNG)
+![alt text](bms-breakdownImages/CAN_INTERFACE.png)
 
 <figure class="zoom-figure">
   <a href="bms-breakdownImages/CAN_BUS_INT_SVG.svg" target="svg-viewer" class="svg-link" data-svg-src="bms-breakdownImages/CAN_BUS_INT_SVG.svg">

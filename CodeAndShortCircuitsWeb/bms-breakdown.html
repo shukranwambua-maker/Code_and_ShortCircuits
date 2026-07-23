@@ -185,6 +185,36 @@
       color: var(--text-muted);
       margin-top: 2rem;
     }
+    .article-engagement {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .like-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.8rem 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--accent);
+      background: #fff;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .like-button:hover,
+    .like-button:focus-visible {
+      background: rgba(21, 101, 192, 0.08);
+      outline: none;
+      transform: translateY(-1px);
+    }
+    .like-button:focus-visible {
+      box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.18);
+    }
   </style>
 </head>
 <body>
@@ -215,6 +245,12 @@
         <time datetime="2026-07-17">17 Jul, 2026</time>
         · Circuits
       </p>
+      <div class="article-engagement">
+        <button id="like-button" class="like-button" type="button" aria-pressed="false">
+          <span aria-hidden="true">❤</span>
+          <span id="like-count">7</span>
+        </button>
+      </div>
       <div id="article-content"></div>
     </article>
   </main>
@@ -351,6 +387,62 @@
       }
     }
 
+    const POST_SLUG = 'bms-breakdown';
+    const BASE_LIKES = 7;
+    const likeButton = document.getElementById('like-button');
+    const likeCountEl = document.getElementById('like-count');
+    const hitCounterEl = document.querySelector('#hit-counter .hit-value');
+
+    function getStoredLikes() {
+      return Number(localStorage.getItem(`like_${POST_SLUG}`) ?? BASE_LIKES);
+    }
+
+    function updateLikeDisplay() {
+      likeCountEl.textContent = getStoredLikes().toLocaleString();
+      likeButton.setAttribute('aria-pressed', String(getStoredLikes() > BASE_LIKES));
+    }
+
+    function broadcastLikeChange(count) {
+      if (window.BroadcastChannel) {
+        const channel = new BroadcastChannel('css-likes');
+        channel.postMessage({ type: 'like', slug: POST_SLUG, count });
+        channel.close();
+      }
+    }
+
+    likeButton.addEventListener('click', () => {
+      const nextLikes = getStoredLikes() + 1;
+      localStorage.setItem(`like_${POST_SLUG}`, String(nextLikes));
+      updateLikeDisplay();
+      broadcastLikeChange(nextLikes);
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === `like_${POST_SLUG}`) {
+        updateLikeDisplay();
+      }
+    });
+
+    if (window.BroadcastChannel) {
+      const sharedChannel = new BroadcastChannel('css-likes');
+      sharedChannel.addEventListener('message', (event) => {
+        if (event.data?.type === 'like' && event.data.slug === POST_SLUG) {
+          updateLikeDisplay();
+        }
+      });
+    }
+
+    updateLikeDisplay();
+    async function recordPageHit() {
+      try {
+        await fetch('https://api.countapi.xyz/hit/codeandshortcircuits/bms-breakdown');
+      } catch (error) {
+        console.error('Page hit record failed', error);
+      }
+    }
+
+    updateLikeDisplay();
+    recordPageHit();
     renderMarkdownArticle();
   </script>
 </body>

@@ -201,6 +201,35 @@ a { color: inherit; text-decoration: none; }
   background: rgba(232, 168, 56, 0.1);
 }
 
+.hit-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.hit-stat.heat-low {
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.hit-stat.heat-medium {
+  color: #e09b00;
+  background: rgba(224, 155, 0, 0.12);
+}
+
+.hit-stat.heat-high {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.15);
+}
+
+.hit-stat svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* ── Card Image + Stencil Title ── */
 .card-image {
   margin: 0.75rem 0.85rem 0;
